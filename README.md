@@ -20,3 +20,9 @@ Enable the OpenAI Developers plugin to provision an API key through its approved
 `node --check dist/app.js`
 
 `node scripts/check-answers.cjs` — 38 representative questions, unique topic IDs, source URLs, and checks against inappropriate staff-action claims.
+
+## Bulldog chat and Time Clock theme
+
+The UI now matches the BC Time Clock app’s dark sidebar, gray workspace, white cards, maroon buttons, and gold accents. `dist/mascot.css` contains the theme and page-pushing animation; `dist/mascot.js` controls the native dialog, focus restoration, conversation reset, and searchable in-chat topics. The bulldog head asset is reused from the user’s BC Time Clock app at `/loading/bulldog-face.png`; its animated body is CSS. Reduced-motion preferences disable the entrance animation.
+
+Browser checked: launcher, completed entrance, suggested answer, Escape dismissal/focus restoration, reopening with retained conversation, reset, and 390px mobile chat layout.
