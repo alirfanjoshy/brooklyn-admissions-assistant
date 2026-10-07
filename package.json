@@ -1,0 +1,9 @@
+{
+  "name": "brooklyn-admissions-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "python3 -m http.server 4173 --bind 127.0.0.1 --directory dist",
+    "test": "node scripts/check-answers.cjs"
+  }
+}
