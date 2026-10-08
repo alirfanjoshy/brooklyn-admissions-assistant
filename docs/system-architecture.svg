@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
+  <title id="title">Brooklyn College Admissions Assistant system architecture</title>
+  <desc id="desc">Deployment and runtime architecture showing GitHub connected to a Render Blueprint, which provisions a Node web service and PostgreSQL. Visitors use a browser FAQ matcher, with optional AI calls and consent-based transcript storage.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8f7a5b"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#527262"/></marker>
+    <style>
+      text{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#383733}
+      .eyebrow{font-size:13px;font-weight:700;letter-spacing:2.1px;fill:#91764d}
+      .title{font-family:Georgia,"Times New Roman",serif;font-size:38px;font-weight:400;letter-spacing:-.6px}
+      .subtitle{font-size:15px;fill:#77746d}
+      .section{font-size:12px;font-weight:700;letter-spacing:1.8px;fill:#928b80}
+      .box{fill:#fffefa;stroke:#e5dfd5;stroke-width:1.5}
+      .head{font-size:20px;font-weight:650}
+      .body{font-size:13px;fill:#77746d}
+      .small{font-size:11px;fill:#77746d}
+      .tag{font-size:10px;font-weight:700;letter-spacing:1.4px;fill:#947b54}
+      .line{stroke:#8f7a5b;stroke-width:2;fill:none;marker-end:url(#arrow)}
+      .line-green{stroke:#527262;stroke-width:2;fill:none;marker-end:url(#arrow-green)}
+      .dashed{stroke-dasharray:7 6}
+      .note{font-size:12px;fill:#656158}
+      .note-strong{font-size:12px;font-weight:700;fill:#4a4740}
+    </style>
+  </defs>
+  <rect width="1600" height="1120" fill="#f6f4ef"/>
+  <rect x="0" y="0" width="1600" height="10" fill="#9a835d"/>
+  <text x="72" y="62" class="eyebrow">BROOKLYN COLLEGE · UNDERGRADUATE ADMISSIONS</text>
+  <text x="72" y="111" class="title">System architecture</text>
+  <text x="72" y="142" class="subtitle">Runtime, data, and deployment paths for the admissions assistant</text>
+  <rect x="1260" y="68" width="268" height="36" rx="18" fill="#efe8da"/>
+  <circle cx="1282" cy="86" r="5" fill="#65856f"/>
+  <text x="1296" y="90" class="small" fill="#596b5c">LIVE · FAQ MODE · POSTGRES CONNECTED</text>
+
+  <text x="72" y="195" class="section">01 · SOURCE AND DEPLOYMENT</text>
+  <rect x="72" y="216" width="410" height="142" rx="12" class="box"/>
+  <rect x="72" y="216" width="410" height="5" rx="3" fill="#74699a"/>
+  <text x="96" y="250" class="tag">SOURCE CONTROL</text>
+  <text x="96" y="281" class="head">GitHub private repository</text>
+  <text x="96" y="309" class="body">main branch · source, UI, knowledge, server</text>
+  <text x="96" y="333" class="small">github.com/alirfanjoshy/brooklyn-admissions-assistant</text>
+
+  <path d="M494 287 H574" class="line"/>
+  <text x="504" y="269" class="small">push to main</text>
+
+  <rect x="592" y="216" width="410" height="142" rx="12" class="box"/>
+  <rect x="592" y="216" width="410" height="5" rx="3" fill="#a58b61"/>
+  <text x="616" y="250" class="tag">BUILD AND DEPLOY</text>
+  <text x="616" y="281" class="head">Render Blueprint</text>
+  <text x="616" y="309" class="body">render.yaml · npm ci · npm run build</text>
+  <text x="616" y="333" class="small">Creates the app service and managed database</text>
+
+  <path d="M1014 287 H1094" class="line"/>
+  <text x="1020" y="269" class="small">automatic deploy</text>
+
+  <rect x="1112" y="216" width="416" height="142" rx="12" class="box"/>
+  <rect x="1112" y="216" width="416" height="5" rx="3" fill="#527262"/>
+  <text x="1136" y="250" class="tag">HOSTED RESOURCES</text>
+  <text x="1136" y="281" class="head">Render web service + Postgres</text>
+  <text x="1136" y="309" class="body">Node.js app · onrender.com · PostgreSQL</text>
+  <text x="1136" y="333" class="small">Free plans · service can sleep · DB expires after 30 days</text>
+
+  <text x="72" y="416" class="section">02 · RUNTIME REQUEST AND DATA FLOW</text>
+
+  <rect x="72" y="442" width="438" height="362" rx="13" class="box"/>
+  <rect x="72" y="442" width="438" height="6" rx="3" fill="#977c50"/>
+  <text x="98" y="481" class="tag">VISITOR BROWSER</text>
+  <text x="98" y="513" class="head">Admissions interface</text>
+  <text x="98" y="541" class="body">Loads HTML, CSS, JavaScript, images, and reviewed topics.</text>
+  <rect x="98" y="566" width="386" height="58" rx="8" fill="#f7f3eb"/>
+  <text x="116" y="590" class="tag">FAQ MODE · CURRENT</text>
+  <text x="116" y="611" class="small">matcher.js finds answers from 32 bundled topics.</text>
+  <rect x="98" y="637" width="386" height="58" rx="8" fill="#f7f3eb"/>
+  <text x="116" y="661" class="tag">LOCAL SAVED ANSWERS</text>
+  <text x="116" y="682" class="small">Saved answers stay in this browser.</text>
+  <rect x="98" y="708" width="386" height="69" rx="8" fill="#edf2ee"/>
+  <text x="116" y="733" class="tag" fill="#527262">AI MODE · OPTIONAL</text>
+  <text x="116" y="754" class="small">Calls the server only when an API key is configured.</text>
+
+  <path d="M522 555 H584" class="line"/>
+  <text x="516" y="536" class="small">AI chat request</text>
+  <path d="M584 598 H522" class="line-green"/>
+  <text x="523" y="621" class="small">answer + sources</text>
+
+  <rect x="598" y="442" width="460" height="362" rx="13" class="box"/>
+  <rect x="598" y="442" width="460" height="6" rx="3" fill="#526b58"/>
+  <text x="624" y="481" class="tag">RENDER WEB SERVICE · NODE.JS</text>
+  <text x="624" y="513" class="head">HTTP server &amp; chat API</text>
+  <text x="624" y="541" class="body">server/dev.mjs · binds to 0.0.0.0:$PORT</text>
+  <line x1="624" y1="559" x2="1032" y2="559" stroke="#ebe6dd"/>
+  <text x="624" y="588" class="tag">GET  /api/chat/status</text>
+  <text x="624" y="608" class="small">Reports whether AI mode is configured.</text>
+  <text x="624" y="642" class="tag">POST  /api/chat</text>
+  <text x="624" y="662" class="small">Validates messages, calls AI, filters source citations.</text>
+  <text x="624" y="696" class="tag">POST  /api/record</text>
+  <text x="624" y="716" class="small">Checks same-origin + consent before storing a chat turn.</text>
+  <rect x="624" y="742" width="408" height="40" rx="7" fill="#f4f1e9"/>
+  <text x="640" y="767" class="small">No transcript read API · no student-record access</text>
+
+  <path d="M1070 561 H1120" class="line dashed"/>
+  <text x="1060" y="540" class="small">optional</text>
+  <rect x="1132" y="466" width="396" height="145" rx="12" class="box"/>
+  <rect x="1132" y="466" width="396" height="5" rx="3" fill="#8b8290"/>
+  <text x="1156" y="500" class="tag">OPTIONAL MODEL SERVICE</text>
+  <text x="1156" y="531" class="head">OpenAI Responses API</text>
+  <text x="1156" y="558" class="body">Called by /api/chat when OPENAI_API_KEY exists.</text>
+  <text x="1156" y="583" class="small">Currently disabled · API request uses store:false.</text>
+
+  <path d="M1070 710 H1120" class="line-green"/>
+  <text x="1057" y="689" class="small">consented turns</text>
+  <rect x="1132" y="642" width="396" height="162" rx="12" class="box"/>
+  <rect x="1132" y="642" width="396" height="5" rx="3" fill="#4e776f"/>
+  <text x="1156" y="676" class="tag">MANAGED DATA STORE</text>
+  <text x="1156" y="707" class="head">Render PostgreSQL</text>
+  <text x="1156" y="734" class="body">conversations · conversation_messages</text>
+  <text x="1156" y="758" class="small">Question + answer text only after visitor opt-in.</text>
+  <text x="1156" y="781" class="small">30-day cleanup runs on a later opted-in save.</text>
+
+  <rect x="72" y="844" width="1456" height="205" rx="13" fill="#eeeae1"/>
+  <text x="98" y="883" class="tag">END-TO-END BEHAVIOR</text>
+  <line x1="800" y1="899" x2="800" y2="1022" stroke="#d9d2c6"/>
+  <text x="98" y="920" class="note-strong">1 · FAQ answer</text>
+  <text x="98" y="946" class="note">Browser matcher → reviewed topic → response with official College source link.</text>
+  <text x="98" y="981" class="note-strong">2 · AI answer (when enabled)</text>
+  <text x="98" y="1007" class="note">Browser → Node API → OpenAI → source-filtered answer back to the browser.</text>
+  <text x="836" y="920" class="note-strong">3 · Optional transcript storage</text>
+  <text x="836" y="946" class="note">Visitor opts in → same-origin record route → PostgreSQL transaction.</text>
+  <text x="836" y="981" class="note-strong">Privacy and scope</text>
+  <text x="836" y="1007" class="note">Independent prototype; no personal records, eligibility decisions, or admissions actions.</text>
+  <text x="72" y="1084" class="small">Prepared October 2026 · Component diagram based on the deployed repository configuration</text>
+</svg>
