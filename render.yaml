@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: brooklyn-admissions-assistant
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/chat/status
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: brooklyn-admissions-db
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+
+databases:
+  - name: brooklyn-admissions-db
+    databaseName: admissions
+    user: admissions
+    plan: free

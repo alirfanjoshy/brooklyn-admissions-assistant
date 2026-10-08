@@ -2,9 +2,12 @@
   "name": "brooklyn-admissions-assistant",
   "version": "1.0.0",
   "private": true,
+  "engines": {"node": ">=22"},
   "scripts": {
     "dev": "node server/dev.mjs",
     "build": "node scripts/build-worker.mjs",
+    "start": "node server/dev.mjs",
     "test": "node scripts/check-answers.cjs && node scripts/check-ai.mjs && node scripts/check-worker.mjs"
-  }
+  },
+  "dependencies": {"pg": "^8.16.3"}
 }
