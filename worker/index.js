@@ -22,7 +22,7 @@ async function record(request,env){
   if(data?.consent!==true||typeof data.conversationId!=='string'||!/^[0-9a-f-]{36}$/i.test(data.conversationId)||typeof data.question!=='string'||!data.question.trim()||data.question.length>1500||typeof data.answer!=='string'||!data.answer.trim()||data.answer.length>4000)return json({error:'A valid consented chat turn is required.'},400);
   const conversationId=data.conversationId;const now=new Date().toISOString();
   const knownIds=new Set(knowledge.map(item=>item.id));
-  const sourceId=typeof data.sourceId==='string'&&knownIds.has(data.sourceId)?data.sourceId:null;
+  const sourceId=typeof data.sourceId==='string'&&knownIds.has(data.sourceId)?data.sourceId:(Array.isArray(data.sourceUrls)?knowledge.find(item=>data.sourceUrls.slice(0,4).includes(item.url))?.id:null)||null;
   try{
     await env.DB.prepare("DELETE FROM conversations WHERE last_activity_at < datetime('now', '-30 days')").run();
     await env.DB.prepare('INSERT INTO conversations(id,consented_at,created_at,last_activity_at) VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET last_activity_at=excluded.last_activity_at').bind(conversationId,now,now,now).run();
