@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node server/dev.mjs",
-    "test": "node scripts/check-answers.cjs"
+    "build": "node scripts/build-worker.mjs",
+    "test": "node scripts/check-answers.cjs && node scripts/check-ai.mjs && node scripts/check-worker.mjs"
   }
 }

@@ -11,7 +11,7 @@ const app=await readFile(path.join(root,'dist/app.js'),'utf8');
 const knowledge=JSON.parse(vm.runInNewContext(template+'\n'+app.split('const $=')[0]+'\nJSON.stringify(knowledge)'));
 const handle=makeChatHandler(knowledge,{env:process.env});
 const port=Number(process.env.PORT||4173);
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpeg':'image/jpeg','.svg':'image/svg+xml'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.svg':'image/svg+xml'};
 let active=0;
 const server=http.createServer(async(req,res)=>{
  try{
@@ -25,8 +25,8 @@ const server=http.createServer(async(req,res)=>{
  }
  if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
  const relative=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
- const file=path.resolve(root,'dist','.'+relative);
- if(!file.startsWith(path.join(root,'dist')+path.sep)||relative.split('/').some(s=>s.startsWith('.'))){res.writeHead(403);res.end();return;}
+ const file=path.resolve(root,'public','.'+relative);
+ if(!file.startsWith(path.join(root,'public')+path.sep)||relative.split('/').some(s=>s.startsWith('.'))){res.writeHead(403);res.end();return;}
  const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:body);
  }catch{res.writeHead(404);res.end('Not found');}
 });

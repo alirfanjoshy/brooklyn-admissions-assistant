@@ -1,44 +1,84 @@
-# Brooklyn Admissions Assistant
+# Brooklyn College Undergraduate Admissions Assistant
 
-Responsive, buildless admissions assistant prototype. Open `dist/index.html` or serve `dist/` with a static HTTP server.
+A responsive, Bulldog-branded guide to undergraduate admissions at Brooklyn College. The app combines 32 source-linked answers adapted from the supplied admissions inquiry templates with a natural-language AI assistant when an OpenAI API key is configured. Its “How it works” view maps the question-routing, answer, referral, and optional data-storage steps.
 
-## Features
-- Responsive maroon-and-cream interface with original SVG campus illustration
-- Source-linked curated admissions answers, suggested follow-ups, resource library
-- Saved answers in local browser storage; copying and new conversations
-- Keyboard-accessible chat input and mobile navigation
+This is an independent prototype, not an official Brooklyn College service. It cannot access CUNYfirst, view application records, decide eligibility, submit applications, or act on a student’s behalf. Verify deadlines and personal application questions with the College.
 
-## Content and limitations
-The current chat is a **curated FAQ matcher, not generative AI**. It cannot access applications, determine eligibility, make admissions decisions, or schedule appointments. Source links are official Brooklyn College pages reviewed October 6, 2026. Recheck admissions policies before a public rollout. The supplied 2020 ADMISSIONS INQUIRY TEMPLATES.docx was incorporated on October 6, 2026. The app now contains 32 topics, including 24 new template-based topics. Legacy figures and procedures are updated where verified, or explicitly referred to Admissions for confirmation.
+## What it does
 
-Edit the base `knowledge` array in `dist/app.js` or the template entries in `scripts/add-template-content.py` (then run it to regenerate `dist/template-knowledge.js`). Matching priority lives in `dist/matcher.js`. User input is rendered with textContent, never interpreted as HTML. Messages are not persisted; only saved topic IDs are stored in localStorage.
+- Answers common first-year, transfer, international, financial-aid, deposit, and enrollment questions, with links to official College pages.
+- Understands free-form questions and conversation context through the OpenAI Responses API when configured; otherwise, it uses the curated, source-linked FAQ matcher.
+- Shows a workflow map that explains routing, source checks, AI/FAQ fallback, referrals, and consent-controlled transcript storage.
+- Provides searchable admissions topics, saved answers in the visitor’s browser, and a responsive Bulldog chat panel.
+- Stores conversation text in a hosted D1 database only after a visitor checks the optional save box. The database records a random conversation ID, user and assistant text, source topic, and timestamps. It does not collect names, email addresses, IP addresses, account credentials, or student records. Records older than 30 days are removed when a later opted-in turn is saved; they can remain longer if the app is idle.
 
-## Live AI integration
-Enable the OpenAI Developers plugin to provision an API key through its approved workflow. Add a server-side chat endpoint with secret storage, approved source retrieval, citations, request limits, and clear uncertainty handling. Never place API keys in browser code. This static preview does not include an AI backend.
+## Run locally
 
-## Verification
-`node --check dist/app.js`
+Requires Node.js 24 or newer. There are no npm dependencies.
 
-`node scripts/check-answers.cjs` — 38 representative questions, unique topic IDs, source URLs, and checks against inappropriate staff-action claims.
+~~~sh
+npm run dev
+~~~
 
-## Bulldog chat and Time Clock theme
+Open http://localhost:4173. Without OPENAI_API_KEY, the local app uses the curated FAQ. Local preview does not save conversations to D1; the database is provisioned by the hosted Sites deployment.
 
-The UI now matches the BC Time Clock app’s dark sidebar, gray workspace, white cards, maroon buttons, and gold accents. `dist/mascot.css` contains the theme and page-pushing animation; `dist/mascot.js` controls the native dialog, focus restoration, conversation reset, and searchable in-chat topics. The bulldog head asset is reused from the user’s BC Time Clock app at `/loading/bulldog-face.png`; its animated body is CSS. Reduced-motion preferences disable the entrance animation.
+To enable conversational AI locally, place secrets in the ignored .env.local file:
 
-Browser checked: launcher, completed entrance, suggested answer, Escape dismissal/focus restoration, reopening with retained conversation, reset, and 390px mobile chat layout.
+~~~dotenv
+OPENAI_API_KEY=your-key
+OPENAI_MODEL=gpt-4.1-mini
+~~~
 
-## Conversational AI backend (prepared, activation pending)
+Restart the dev server after changing the file. Never place credentials in browser code, Git, or this README. The API request uses store:false; this is not a promise of zero retention by the AI provider.
 
-`npm run dev` now uses Node 24 and serves the site plus `/api/chat` and `/api/chat/status` from `server/dev.mjs`. The AI handler uses the OpenAI Responses API with `gpt-4.1-mini` by default (configurable via OPENAI_MODEL), all 32 knowledge entries, and up to 16 recent messages. It supports natural phrasing and follow-ups when connected. Keys stay server-side. API storage is disabled with store:false; this is not a claim of zero provider retention.
+## Build and checks
 
-Install the OpenAI Developers plugin to provision the key using its approved workflow. Local configuration is read from ignored `.env.local`; only variable names are committed in `.env.example`. Never paste credentials into chat or browser files. Restart after configuring a key.
+~~~sh
+npm run build
+npm test
+~~~
 
-Without a key, the status endpoint reports FAQ mode and the UI keeps its template-preview label. API errors are shown with a retry button, not silently presented as AI answers. Topic-library clicks remain source-linked prepared answers, available even without AI.
+The build creates a self-contained Cloudflare Worker under dist/server/, bundling the static UI, 32 reviewed knowledge topics, and the chat handler. It also includes the database migration and Sites manifest. Tests cover representative question matching, AI request validation, answer-source filtering, worker routes, consent-gated inserts, origin checks, and retention cleanup. They use a mock AI response and mock D1 binding; no live AI request is made.
 
-Validation: `node scripts/check-ai.mjs` checks conversation context forwarding, server-owned source URLs, input validation, and error behavior with a mock API. No live AI request has been verified. `node scripts/check-answers.cjs` checks existing FAQs.
+## Database
 
-The published Sites version is still static. Hosting activation requires a server-capable Sites build and its OPENAI_API_KEY runtime secret; the Node development server is for local use, not the Cloudflare Worker runtime. The current public/static build must not be described as live AI until migration, secret configuration, and end-to-end checks complete.
+The hosted Site uses its D1 binding DB. The initial migration is drizzle/0001_consent_based_conversations.sql and creates:
 
-## Refined visual design
+- conversations: random ID and consent/creation/activity timestamps.
+- conversation_messages: user/assistant text, source topic ID, and timestamp, linked to its conversation.
 
-`dist/refined.css` is the current visual layer: warm neutral surfaces, editorial serif headings, consistent line icons, simplified cards, and a compact maroon chat launcher. The large CSS bulldog body has been removed from the markup. Chat opens in a rounded floating panel with a brief fade/vertical transition; it no longer pushes the page. Reduced-motion settings disable the transition. Desktop and 390px mobile chat layouts and topic replies were checked in the browser.
+The Worker rejects writes without explicit consent, same-origin checks, valid conversation IDs, and bounded message sizes. It does not expose a transcript-reading route to visitors. The Site owner can inspect the hosted database through the Sites database tools. Do not use this prototype to collect sensitive admissions information.
+
+## Hosting
+
+The app is connected to a private OpenAI Sites deployment at:
+
+<https://brooklyn-admissions-assistant.joshy01.chatgpt.site>
+
+.openai/hosting.json identifies that Site and its D1 binding. Publishing a Worker build applies the schema migration and deploys the app. The existing Site audience is owner-only; change its access policy to public before sharing with students.
+
+Set OPENAI_API_KEY as a secret in the Site runtime environment to enable AI answers; optionally set OPENAI_MODEL. Deploy the saved version after updating environment variables. Keep secrets out of source control.
+
+## GitHub
+
+The intended repository name is brooklyn-admissions-assistant. Create it as private unless you deliberately want the source to be public, then connect this working tree and push main:
+
+~~~sh
+gh repo create brooklyn-admissions-assistant --private --source . --remote origin --push
+~~~
+
+The GitHub app connected to this workspace can list and read repositories but does not provide repository creation. If gh is unavailable, sign in to GitHub in a browser and create the empty repository, then add it as origin and push.
+
+## Project layout
+
+- public/ — app UI, knowledge bundle, styles, and image assets used in local preview and Worker builds.
+- worker/index.js — Worker routing, D1 persistence, consent validation, and response throttling.
+- server/chat.mjs — prompt rules, allowlisted source citations, and OpenAI API integration.
+- server/dev.mjs — local Node preview server.
+- drizzle/ — hosted D1 schema migration.
+- scripts/build-worker.mjs — bundles the site and chat handler for Sites.
+- scripts/check-answers.cjs, scripts/check-ai.mjs, scripts/check-worker.mjs — project checks.
+
+## Admissions content
+
+The admissions content is adapted from the supplied 2020 ADMISSIONS INQUIRY TEMPLATES.docx. Procedures and time-sensitive requirements should be verified against current College pages before a public launch. See CONTENT_REVIEW.md for review notes and CAMPUS_ARTWORK.md for the campus illustration background.
