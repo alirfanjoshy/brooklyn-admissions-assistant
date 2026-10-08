@@ -8,7 +8,7 @@ const db={
 };
 const env={DB:db};
 const root=await worker.fetch(new Request('https://assistant.test/'),env);
-assert.equal(root.status,200);assert.match(root.headers.get('content-type'),/text\/html/);assert.match(await root.text(),/How the admissions guide works/);
+assert.equal(root.status,200);assert.match(root.headers.get('content-type'),/text\/html/);const homeHtml=await root.text();assert.match(homeHtml,/Brooklyn College \| Admissions Assistant/);assert.doesNotMatch(homeHtml,/How the admissions guide works|data-view="workflow"/);
 const status=await worker.fetch(new Request('https://assistant.test/api/chat/status'),env);
 assert.deepEqual(await status.json(),{available:false,mode:'faq',storage:'opt-in'});
 const payload={conversationId:'123e4567-e89b-42d3-a456-426614174000',consent:true,question:'How do I apply?',answer:'Use the CUNY application.',sourceId:'apply'};
