@@ -14,7 +14,9 @@ const replacements=[
   ['role="img" aria-label="A student asks a question; the assistant finds relevant admissions topics; AI or FAQ prepares a source-based reply; approved conversations are optionally saved; unclear policy questions are referred to Admissions."',''],
   ['Records expire after 30 days.','Records older than 30 days are removed when a later opt-in turn is saved.'],
   ['Save this conversation anonymously for up to 30 days. Don’t include personal or account details.','Opt in to save this chat anonymously. Records older than 30 days are removed when a later opt-in turn is saved. Don’t include personal or account details.'],
+  ['Opt in to save this chat anonymously. Records older than 30 days are removed when a later opt-in turn is saved. Don’t include personal or account details.','Save chat text under a random conversation ID. It may contain anything you type; don’t include names, emails, or personal/account details. Records over 30 days old are removed when a later opt-in turn is saved.'],
+  ['Only if the visitor agrees. Random conversation IDs; no names, emails, or IP addresses. Records older than 30 days are removed when a later opt-in turn is saved.','Only after consent. The chat text is saved under a random conversation ID. The app does not ask for names, emails, or account details. Records over 30 days old are removed when a later opt-in turn is saved.'],
   ['assets/brooklyn-campus-illustration.png','assets/brooklyn-campus-illustration.jpg'],
 ];
-for(const [from,to] of replacements){if(html.includes(to))continue;if(!html.includes(from))throw new Error(`Could not find expected site markup: ${from.slice(0,100)}`);html=html.replace(from,to);}
+for(const [from,to] of replacements){if(html.includes(to))continue;if(!html.includes(from)){if(from.startsWith('<section id="library"')&&html.includes('<section id="workflow"'))continue;if(from.includes('id="chat-composer-slot"')&&html.includes('id="save-consent"'))continue;throw new Error(`Could not find expected site markup: ${from.slice(0,100)}`);}html=html.replace(from,to);}
 await writeFile(file,html);

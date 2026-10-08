@@ -10,7 +10,7 @@ This is an independent prototype, not an official Brooklyn College service. It c
 - Understands free-form questions and conversation context through the OpenAI Responses API when configured; otherwise, it uses the curated, source-linked FAQ matcher.
 - Shows a workflow map that explains routing, source checks, AI/FAQ fallback, referrals, and consent-controlled transcript storage.
 - Provides searchable admissions topics, saved answers in the visitor’s browser, and a responsive Bulldog chat panel.
-- Stores conversation text in a hosted D1 database only after a visitor checks the optional save box. The database records a random conversation ID, user and assistant text, source topic, and timestamps. It does not collect names, email addresses, IP addresses, account credentials, or student records. Records older than 30 days are removed when a later opted-in turn is saved; they can remain longer if the app is idle.
+- Stores chat text in a hosted D1 database only after a visitor opts in. It saves what they type and the assistant’s response under a random conversation ID; the app does not ask for names, email addresses, IP addresses, account credentials, or student records. If a visitor includes personal details in their text, those details would be saved too, so the consent notice tells them not to. Records older than 30 days are removed when a later opted-in turn is saved; they can remain longer if the app is idle.
 
 ## Run locally
 
