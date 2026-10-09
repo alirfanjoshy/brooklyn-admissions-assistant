@@ -152,3 +152,25 @@ main{max-width:none;margin:0;padding:0}
 .typing-dots i:nth-child(2){animation-delay:.16s}.typing-dots i:nth-child(3){animation-delay:.32s}
 @keyframes typing-pulse{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
 @media(prefers-reduced-motion:reduce){.typing-dots i{animation:none;opacity:.75}}
+
+/* Refined chat surface: softer edges, calmer rhythm, and a more finished drawer */
+#bulldog-dialog{border:0;border-radius:24px;overflow:hidden;box-shadow:0 24px 90px #080c12a6}
+.chat-page{border:1px solid #e4e7eb;border-radius:24px;overflow:hidden;box-shadow:0 22px 70px #0b12183d}
+.chat-page-header{background:linear-gradient(128deg,#111820 0%,#25131b 100%);padding:21px 23px;min-height:96px}
+.chat-gold-line{height:2px;background:linear-gradient(90deg,#86213f 0%,#a12c4d 72%,#e6b655 100%)}
+#chat-scroll{background:linear-gradient(180deg,#f8f8f9 0%,#f4f5f6 100%);padding:25px 24px}
+#chat-intro{border:1px solid #e7e8eb;border-radius:18px;box-shadow:0 7px 25px #17202a08}
+#bulldog-dialog .message{gap:11px;margin:0 0 20px}
+#bulldog-dialog .assistant-icon{width:36px;height:36px;flex-basis:36px;border:2px solid #fff;box-shadow:0 2px 8px #1d263012}
+#bulldog-dialog .bubble{max-width:min(88%,520px);border:1px solid #e8e9ec;border-radius:17px 17px 17px 5px;background:#fff;padding:16px 18px;box-shadow:0 5px 18px #18202a0b;line-height:1.75}
+#bulldog-dialog .user .bubble{border:1px solid #ead7dd;border-radius:17px 17px 5px 17px;background:#f6e9ed;color:#512233;box-shadow:none}
+#bulldog-dialog .bubble h3{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:700;letter-spacing:-.2px;text-transform:none;color:#542034}
+#bulldog-dialog .typing-bubble{min-width:158px;padding:13px 16px}
+#chat-composer-slot{padding:14px 20px 16px;background:#fff}
+#chat-composer-slot .composer{padding:8px 9px 8px 15px;border:1px solid #e1e3e7;border-radius:16px;background:#fafafa;transition:border-color .18s,box-shadow .18s}
+#chat-composer-slot .composer:focus-within{border-color:#ae7184;box-shadow:0 0 0 4px #86213f12}
+#chat-composer-slot textarea{font-size:13px}
+#chat-composer-slot #send{width:38px;height:38px;border-radius:12px;background:#86213f}
+#chat-composer-slot #send:hover{background:#6d1832}
+@media(min-width:651px){#bulldog-dialog{inset:16px 18px 16px auto;width:min(590px,calc(100vw - 150px));height:auto;max-height:calc(100dvh - 32px)}}
+@media(max-width:650px){#bulldog-dialog{border-radius:22px}.chat-page{border-radius:22px}.chat-page-header{padding:14px 15px}#chat-scroll{padding:16px 13px}#chat-composer-slot{padding:10px 12px 12px}}
