@@ -1,7 +1,11 @@
 export function createPool(connectionString){
  if(!connectionString)return null;
  // Load pg only when a hosted database is configured so FAQ-only local use stays lightweight.
- return import('pg').then(({Pool})=>new Pool({connectionString,ssl:connectionString.includes('.render.com')?{rejectUnauthorized:false}:undefined,max:5}));
+ return import('pg').then(({Pool})=>{
+  const pool=new Pool({connectionString,ssl:connectionString.includes('.render.com')?{rejectUnauthorized:false}:undefined,max:5,connectionTimeoutMillis:5000,query_timeout:10000,statement_timeout:10000});
+  pool.on('error',error=>console.error('Idle database connection failed.',error.code||error.name));
+  return pool;
+ });
 }
 
 async function resolvePool(value){return value&&typeof value.then==='function'?await value:value;}

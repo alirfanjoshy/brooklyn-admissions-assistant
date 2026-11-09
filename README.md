@@ -27,9 +27,9 @@ Copy `.env.example` to `.env.local` and set the values you need. Never commit se
 
 ## Deploy on Render
 
-The repository includes `render.yaml` for a Render Blueprint. It defines a Node web service and a PostgreSQL database, builds the static bundle, and starts the app on Render’s `PORT`. During Blueprint setup, enter `OPENAI_API_KEY` as a secret in Render to enable conversational answers; without it, the FAQ remains usable.
+The repository includes `render.yaml` for a Render Blueprint. It defines a Node web service, builds the static bundle, and starts the app on Render’s `PORT`. Set `DATABASE_URL` in Render's Environment settings to the Neon PostgreSQL connection string for the `admissions` database, including its SSL parameters. Keep this value secret. During Blueprint setup, enter `OPENAI_API_KEY` as a secret in Render to enable conversational answers; without it, the FAQ remains usable.
 
-The Blueprint currently uses Render’s free plans for a preview. Free web services may sleep when idle, and free Postgres databases expire 30 days after creation. Upgrade the database before that date if you need to retain conversation data; do not use this free database for production records. See Render’s [free instance limits](https://render.com/docs/free).
+The web service uses Render's free plan and may sleep when idle. PostgreSQL is provisioned separately in Neon; the Blueprint no longer creates an expiring Render database. For an existing deployment, replace `DATABASE_URL` in Render and redeploy; updating the Blueprint file alone does not replace an existing secret. The app creates its tables on startup and continues serving the website if storage is unavailable. Restart after restoring database connectivity if initialization failed. Existing conversation records are not automatically copied to the replacement database. See Render’s [free instance limits](https://render.com/docs/free).
 
 ## GitHub
 

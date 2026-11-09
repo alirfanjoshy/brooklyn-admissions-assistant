@@ -7,11 +7,16 @@ import {makeChatHandler} from './chat.mjs';
 import {createPool, initializeDatabase, recordTurn} from './postgres.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 try{process.loadEnvFile(path.join(root,'.env.local'));}catch(e){if(e.code!=='ENOENT')throw e;}
-const template=await readFile(path.join(root,'dist/template-knowledge.js'),'utf8');
-const app=await readFile(path.join(root,'dist/app.js'),'utf8');
+const template=await readFile(path.join(root,'public/template-knowledge.js'),'utf8');
+const app=await readFile(path.join(root,'public/app.js'),'utf8');
 const knowledge=JSON.parse(vm.runInNewContext(template+'\n'+app.split('const $=')[0]+'\nJSON.stringify(knowledge)'));
 const handle=makeChatHandler(knowledge,{env:process.env});
 const pool=createPool(process.env.DATABASE_URL);
+let databaseReady=false;
+// Optional transcript storage must not block the website or Render health checks.
+initializeDatabase(pool).then(()=>{databaseReady=!!pool;}).catch(error=>{
+ console.error('Conversation storage unavailable; continuing without storage.',error.code||error.name);
+});
 const port=Number(process.env.PORT||4173);
 const hostAddress=process.env.HOST|| (process.env.RENDER?'0.0.0.0':'127.0.0.1');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.svg':'image/svg+xml'};
@@ -29,6 +34,7 @@ const server=http.createServer(async(req,res)=>{
    if(url.pathname==='/api/record'&&req.method==='POST'){
     try{
      if(req.headers.origin!==`${scheme}://${host}`)throw Object.assign(new Error('Invalid origin.'),{status:403});
+     if(!databaseReady)throw Object.assign(new Error('Conversation storage is temporarily unavailable.'),{status:503});
      response=await recordTurn(pool,JSON.parse(raw),knowledge);
     }catch(error){response=new Response(JSON.stringify({error:error.status?error.message:'Invalid request.'}),{status:error.status||400,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});}
    }else response=await handle(new Request(`${scheme}://${host}${url.pathname}`,{method:req.method,headers:req.headers,...(req.method==='POST'?{body:raw}:{})}));
@@ -42,5 +48,4 @@ const server=http.createServer(async(req,res)=>{
  const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:body);
  }catch{res.writeHead(404);res.end('Not found');}
 });
-await initializeDatabase(pool);
 server.listen(port,hostAddress,()=>console.log(`Admissions assistant listening on ${hostAddress}:${port}\nAI: ${process.env.OPENAI_API_KEY?'configured':'not connected — FAQ mode'}\nDatabase: ${pool?'configured':'not configured'}`));
